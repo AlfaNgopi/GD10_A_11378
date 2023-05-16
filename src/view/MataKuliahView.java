@@ -4,7 +4,15 @@
  */
 package view;
 
+import control.DosenControl;
+import control.MataKuliahControl;
+import exception.InputKosongException;
+import java.util.List;
+import javax.swing.JOptionPane;
+import javax.swing.table.TableModel;
 import model.Dosen;
+import model.MataKuliah;
+import table.TableMataKuliah;
 
 /**
  *
@@ -12,11 +20,23 @@ import model.Dosen;
  */
 public class MataKuliahView extends javax.swing.JFrame {
 
-    /**
-     * Creates new form MataKuliahView
-     */
+    private DosenControl dosenControl;
+    private MataKuliahControl mkControl;
+    private String action = null;
+    List<Dosen> listDosen;
+    int selectedId = 0;
+    
     public MataKuliahView() {
         initComponents();
+        setComponent(false);
+        setRadioKelas(false);
+        setEditDeleteBtn(false);
+        dosenControl = new DosenControl();
+        mkControl = new MataKuliahControl();
+        showMataKuliah();
+        setActionCommandRadio();
+        setDosenToDropDown();
+        
     }
 
     /**
@@ -44,7 +64,7 @@ public class MataKuliahView extends javax.swing.JFrame {
         editBtn = new javax.swing.JButton();
         deleteBtn = new javax.swing.JButton();
         searchBtn = new javax.swing.JButton();
-        inputSearch = new javax.swing.JTextField();
+        searchInput = new javax.swing.JTextField();
         contentPanel = new javax.swing.JPanel();
         matakuliahLabel = new javax.swing.JLabel();
         matakuliahInput = new javax.swing.JTextField();
@@ -74,6 +94,11 @@ public class MataKuliahView extends javax.swing.JFrame {
         logo.setText("jLabel1");
 
         lecturerPanel.setBackground(new java.awt.Color(22, 52, 122));
+        lecturerPanel.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                lecturerPanelMouseClicked(evt);
+            }
+        });
 
         lecturerIcon.setIcon(new javax.swing.ImageIcon(getClass().getResource("/asset/icons/lecturer.png"))); // NOI18N
         lecturerIcon.setText("jLabel1");
@@ -211,10 +236,10 @@ public class MataKuliahView extends javax.swing.JFrame {
             }
         });
 
-        inputSearch.setBackground(new java.awt.Color(222, 222, 222));
-        inputSearch.setFont(new java.awt.Font("Berlin Sans FB Demi", 1, 14)); // NOI18N
-        inputSearch.setForeground(new java.awt.Color(0, 0, 0));
-        inputSearch.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.LOWERED));
+        searchInput.setBackground(new java.awt.Color(222, 222, 222));
+        searchInput.setFont(new java.awt.Font("Berlin Sans FB Demi", 1, 14)); // NOI18N
+        searchInput.setForeground(new java.awt.Color(0, 0, 0));
+        searchInput.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.LOWERED));
 
         javax.swing.GroupLayout headerPanelLayout = new javax.swing.GroupLayout(headerPanel);
         headerPanel.setLayout(headerPanelLayout);
@@ -230,7 +255,7 @@ public class MataKuliahView extends javax.swing.JFrame {
                         .addGap(18, 18, 18)
                         .addComponent(deleteBtn)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 82, Short.MAX_VALUE)
-                        .addComponent(inputSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 207, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(searchInput, javax.swing.GroupLayout.PREFERRED_SIZE, 207, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
                         .addComponent(searchBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(titleContent, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -246,7 +271,7 @@ public class MataKuliahView extends javax.swing.JFrame {
                     .addComponent(editBtn)
                     .addComponent(deleteBtn)
                     .addComponent(searchBtn)
-                    .addComponent(inputSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(searchInput, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(21, 21, 21))
         );
 
@@ -294,6 +319,11 @@ public class MataKuliahView extends javax.swing.JFrame {
         offlineCheckBox.setFont(new java.awt.Font("Berlin Sans FB Demi", 0, 14)); // NOI18N
         offlineCheckBox.setForeground(new java.awt.Color(0, 0, 0));
         offlineCheckBox.setText("Offline");
+        offlineCheckBox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                offlineCheckBoxActionPerformed(evt);
+            }
+        });
 
         metodeLabel1.setFont(new java.awt.Font("Berlin Sans FB Demi", 0, 14)); // NOI18N
         metodeLabel1.setForeground(new java.awt.Color(0, 0, 0));
@@ -357,6 +387,11 @@ public class MataKuliahView extends javax.swing.JFrame {
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
+        tableMataKuliah.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tableMataKuliahMouseClicked(evt);
+            }
+        });
         jScrollPane3.setViewportView(tableMataKuliah);
 
         javax.swing.GroupLayout contentPanelLayout = new javax.swing.GroupLayout(contentPanel);
@@ -475,28 +510,192 @@ public class MataKuliahView extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void addBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addBtnActionPerformed
-        // TODO add your handling code here:
+        setComponent(true);
+        setRadioKelas(false);
+        ruangKelasGroup.clearSelection();
+        clearText();
+        searchInput.setText("");
+        dosenDropdown.setSelectedIndex(0);
+        action = "Tambah";
     }//GEN-LAST:event_addBtnActionPerformed
 
     private void editBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editBtnActionPerformed
-        // TODO add your handling code here:
+        setComponent(true);
+        action = "Ubah";
+        boolean value = false;
+        if (offlineCheckBox.isSelected()) {
+            value = true;
+        }
+        setRadioKelas(value);
+        
     }//GEN-LAST:event_editBtnActionPerformed
 
     private void deleteBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteBtnActionPerformed
-        // TODO add your handling code here:
+        int getAnswer = JOptionPane.showConfirmDialog(rootPane, "Apakah Yakin ingin menghapus data ?", "Konfirmasi", JOptionPane.YES_NO_OPTION);
+        
+        if (getAnswer == 0) {
+            
+        
+            
+            //yes
+            mkControl.deleteDataMataKuliah(selectedId);
+            clearText();
+            showMataKuliah();
+            setComponent(false);
+            setRadioKelas(false);
+            setEditDeleteBtn(false);
+
+            ruangKelasGroup.clearSelection();
+                
+        }
     }//GEN-LAST:event_deleteBtnActionPerformed
 
     private void searchBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_searchBtnActionPerformed
-        // TODO add your handling code here:
+        setComponent(false);
+        setEditDeleteBtn(false);
+        
+        try{
+            TableMataKuliah mataKuliah = mkControl.showDataMataKuliah(searchInput.getText());
+            
+            if (mataKuliah.getRowCount() == 0) {
+                clearText();
+                setEditDeleteBtn(false);
+                JOptionPane.showConfirmDialog(null, "Data Tidak Ditemukan !", "Konfirmasi", JOptionPane.DEFAULT_OPTION);
+                
+            }else{
+                tableMataKuliah.setModel(mataKuliah);
+                
+            }
+            
+            clearText();
+        }catch(Exception e){
+            System.out.println(e.getMessage());
+        }
     }//GEN-LAST:event_searchBtnActionPerformed
 
     private void saveBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveBtnActionPerformed
-        // TODO add your handling code here:
+        try{
+            inputKosongException();
+            String metodePembelajaran = "";
+            String kelas = "";
+            int selectedIndex = dosenDropdown.getSelectedIndex();
+            Dosen selectedDosen = listDosen.get(selectedIndex);
+            
+            if (onlineCheckBox.isSelected() && offlineCheckBox.isSelected()) {
+                metodePembelajaran = "Hybrid";
+                kelas = ruangKelasGroup.getSelection().getActionCommand();
+                
+            }else if(onlineCheckBox.isSelected()){
+                metodePembelajaran = "online";
+                kelas = "Online";
+            }else if(offlineCheckBox.isSelected()){
+                metodePembelajaran = "offline";
+                kelas = ruangKelasGroup.getSelection().getActionCommand();
+            }
+            
+            if ("Tambah".equals(action)) {
+                MataKuliah mk = new MataKuliah(
+                        matakuliahInput.getText(),
+                        deskripsiInput.getText(),
+                        metodePembelajaran, kelas, selectedDosen);
+                mkControl.insertDataMataKuliah(mk);
+                
+            }else{
+                MataKuliah mk = new MataKuliah(
+                        matakuliahInput.getText(),
+                        deskripsiInput.getText(),
+                        metodePembelajaran, kelas, selectedDosen);
+                mkControl.updateDataMataKuliah(mk);
+            }
+            clearText();
+            showMataKuliah();
+            setComponent(false);
+            setRadioKelas(false);
+            ruangKelasGroup.clearSelection();
+        }catch (InputKosongException e){
+            JOptionPane.showMessageDialog(this, e.message());
+        }
+        
     }//GEN-LAST:event_saveBtnActionPerformed
 
     private void cancelBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelBtnActionPerformed
-        // TODO add your handling code here:
+        clearText();
+        showMataKuliah();
+        setComponent(false);
+        setRadioKelas(false);
+        ruangKelasGroup.clearSelection();
     }//GEN-LAST:event_cancelBtnActionPerformed
+
+    private void lecturerPanelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lecturerPanelMouseClicked
+        DosenView dv = new DosenView();
+        this.dispose();
+        dv.setVisible(true);
+    }//GEN-LAST:event_lecturerPanelMouseClicked
+
+    private void offlineCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_offlineCheckBoxActionPerformed
+        
+        setRadioKelas(offlineCheckBox.isSelected());
+        ruangKelasGroup.clearSelection();
+    }//GEN-LAST:event_offlineCheckBoxActionPerformed
+
+    private void tableMataKuliahMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tableMataKuliahMouseClicked
+        int indexDosen = -1;
+        setEditDeleteBtn(true);
+        setComponent(false);
+        setRadioKelas(false);
+        ruangKelasGroup.clearSelection();
+        
+        int clickedRow = tableMataKuliah.getSelectedRow();
+        TableModel tableModel = tableMataKuliah.getModel();
+        
+        selectedId = Integer.parseInt(tableModel.getValueAt(clickedRow, 5).toString());
+        matakuliahInput.setText(tableModel.getValueAt(clickedRow, 0).toString());
+        deskripsiInput.setText(tableModel.getValueAt(clickedRow, 1).toString());
+        
+        String metodePembelajaran = tableModel.getValueAt(clickedRow, 3).toString();
+        switch  (metodePembelajaran){
+            case "Hybrid":
+                onlineCheckBox.setSelected(true);
+                offlineCheckBox.setSelected(true);
+                break;
+            case "Online":
+                onlineCheckBox.setSelected(false);
+                offlineCheckBox.setSelected(true);
+                break;
+            case "Offline":
+                onlineCheckBox.setSelected(true);
+                offlineCheckBox.setSelected(false);
+                break;
+        }
+        
+        String ruangKelas = tableModel.getValueAt(clickedRow, 4).toString();
+        switch (ruangKelas){
+            case "3315":
+                radio3315.setSelected(true);
+                break;
+            case "3318":
+                radio3318.setSelected(true);
+                break;
+            case "3421":
+                radio3421.setSelected(true);
+                break;
+            case "3422":
+                radio3422.setSelected(true);
+                break;
+        }
+        
+        deskripsiInput.setText(tableModel.getValueAt(clickedRow, 1).toString());
+        
+        String nomor_induk_dosen = tableModel.getValueAt(clickedRow, 6).toString();
+        for (Dosen dosen : listDosen) {
+            if (dosen.getNomerIndukDosen().equals(nomor_induk_dosen)) {
+                indexDosen = listDosen.indexOf(dosen);
+            }
+        }
+        
+        dosenDropdown.setSelectedIndex(indexDosen);
+        
+    }//GEN-LAST:event_tableMataKuliahMouseClicked
 
     /**
      * @param args the command line arguments
@@ -548,9 +747,7 @@ public class MataKuliahView extends javax.swing.JFrame {
     private javax.swing.JLabel dosenLabel;
     private javax.swing.JButton editBtn;
     private javax.swing.JPanel headerPanel;
-    private javax.swing.JTextField inputSearch;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JLabel lecturerIcon;
     private javax.swing.JLabel lecturerLabel;
@@ -569,8 +766,74 @@ public class MataKuliahView extends javax.swing.JFrame {
     private javax.swing.ButtonGroup ruangKelasGroup;
     private javax.swing.JButton saveBtn;
     private javax.swing.JButton searchBtn;
+    private javax.swing.JTextField searchInput;
     private javax.swing.JPanel sidebarPanel;
     private javax.swing.JTable tableMataKuliah;
     private javax.swing.JLabel titleContent;
     // End of variables declaration//GEN-END:variables
+
+    private void setComponent(boolean b) {
+        matakuliahInput.setEnabled(b);
+        deskripsiInput.setEnabled(b);
+        dosenDropdown.setEnabled(b);
+        onlineCheckBox.setEnabled(b);
+        offlineCheckBox.setEnabled(b);
+        
+        saveBtn.setEnabled(b);
+        cancelBtn.setEnabled(b);
+        
+    }
+    
+    private void setRadioKelas(boolean b){
+        radio3315.setEnabled(b);
+        radio3318.setEnabled(b);
+        radio3421.setEnabled(b);
+        radio3422.setEnabled(b);
+    }
+    
+    private void setEditDeleteBtn(boolean b){
+        editBtn.setEnabled(b);
+        deleteBtn.setEnabled(b);
+    }
+    
+    private void clearText(){
+        matakuliahInput.setText("");
+        deskripsiInput.setText("");
+        dosenDropdown.setSelectedItem(ABORT);
+        onlineCheckBox.setSelected(false);
+        offlineCheckBox.setSelected(false);
+        
+    }
+    
+    private void showMataKuliah(){
+        tableMataKuliah.setModel(mkControl.showDataMataKuliah(""));
+    }
+    
+    private void setActionCommandRadio(){
+        radio3315.setActionCommand("3315");
+        radio3318.setActionCommand("3318");
+        radio3421.setActionCommand("3421");
+        radio3422.setActionCommand("3422");
+    }
+    
+    private void inputKosongException() throws InputKosongException{
+        if (matakuliahInput.getText().isEmpty() || deskripsiInput.getText().isEmpty() || dosenDropdown.getSelectedIndex() == -1 ) {
+            throw new InputKosongException();
+        }
+        
+        if (!onlineCheckBox.isSelected() && !offlineCheckBox.isSelected()) {
+            throw new InputKosongException();
+        }
+        
+        if (offlineCheckBox.isSelected() && ruangKelasGroup.getSelection() == null) {
+            throw new InputKosongException();
+        }
+    }
+
+    private void setDosenToDropDown() {
+        listDosen = dosenControl.showListDosen();
+        for (int i = 0; i < listDosen.size(); i++) {
+            dosenDropdown.addItem(listDosen.get(i));
+        }
+    }
 }

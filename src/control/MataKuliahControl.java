@@ -24,7 +24,7 @@ public class MataKuliahControl {
         mkDAO.insertMataKuliah(mk);
     }
     
-    public TableMataKuliah showDataDosen(String query){
+    public TableMataKuliah showDataMataKuliah(String query){
         
         List<MataKuliah> list = mkDAO.showMataKuliah(query);
         
@@ -35,11 +35,11 @@ public class MataKuliahControl {
     
     
     
-    public void updateDataDosen(MataKuliah mk){
+    public void updateDataMataKuliah(MataKuliah mk){
         mkDAO.updateMataKuliah(mk);
     }
     
-    public void deleteDataDosen(int id){
+    public void deleteDataMataKuliah(int id){
         mkDAO.deleteMataKuliah(id);
     }
 }

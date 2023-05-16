@@ -25,8 +25,8 @@ public class DosenDAO {
     public void insertDosen(Dosen d){
         CON = dbCON.makeConnection();
         
-        String sql = "INSERT INTO Dosen(nomor_induk_dosen, nama, email, no_handphone"
-                + "VALUES ('"+d.getNomerIndukDosen()+"','"+d.getNama()+"','"+d.getEmail()+"','"+d.getNoHandphone()+"')";
+        String sql = "INSERT INTO dosen(nomor_induk_dosen, nama, email, no_handphone) "
+                + "VALUES ('"+d.getNomerIndukDosen()+"', '"+d.getNama()+"', '"+d.getEmail()+"', '"+d.getNoHandphone()+"')";
         
         System.out.println("Adding Dosen....");
         

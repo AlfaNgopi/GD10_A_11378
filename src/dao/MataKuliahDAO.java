@@ -26,8 +26,8 @@ public class MataKuliahDAO {
     public void insertMataKuliah(MataKuliah d){
         CON = dbCON.makeConnection();
         
-        String sql = "INSERT INTO mata_kuliah(nomor_induk_dosen, nama, deskripsi, metode_pembelajaran, kelas"
-                + "VALUES ('"+d.getDosen().getNomerIndukDosen()+"','"+d.getNama()+"','"+d.getDeskripsi()+"','"
+        String sql = "INSERT INTO mata_kuliah(nomor_induk_dosen, nama, deskripsi, metode_pembelajaran, kelas) "
+                + " VALUES ('"+d.getDosen().getNomerIndukDosen()+"','"+d.getNama()+"','"+d.getDeskripsi()+"','"
                 +d.getMetode_pembelajaran()+"','"+d.getKelas()+"')";
         
         System.out.println("Adding MataKuliah....");
@@ -49,7 +49,7 @@ public class MataKuliahDAO {
     
     public List<MataKuliah> showMataKuliah(String query){
         CON = dbCON.makeConnection();
-        String sql = "SELECT mk.*, d.* FROM mata_kuliah as mk JOIN dosen as d d.nomor_induk_dosen = mk.nomor_induk_dosen WHERE (mk.nama LIKE "
+        String sql = "SELECT mk.*, d.* FROM mata_kuliah as mk JOIN dosen as d on d.nomor_induk_dosen = mk.nomor_induk_dosen WHERE (mk.nama LIKE "
         + "'%" + query + "%'"
         + "OR mk.deskripsi LIKE '$" + query + "%'"
         + "OR mk.metode_pembelajaran LIKE '$" + query + "%'"
@@ -94,7 +94,7 @@ public class MataKuliahDAO {
             
             
         }catch(Exception e){
-            System.out.println("Error Reading Database ...");
+            System.out.println("Error Reading Database ..." + e.getMessage());
         }
         dbCON.closeConnection();
         

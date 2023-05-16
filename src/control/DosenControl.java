@@ -36,6 +36,10 @@ public class DosenControl {
         
     }
     
+    public List<Dosen> showListDosen(){
+        return dDAO.showDosen();
+    }
+    
     public Dosen searchDataDosen(String noInduk){
         Dosen d = null;
         d = dDAO.searchDosen(noInduk);
